@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Camera, FileText, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from './utils';
 import CameraCapture from '@/components/CameraCapture';
 import ConfirmPhoto from '@/components/ConfirmPhoto';
 import DocumentPreview from '@/components/DocumentPreview';
@@ -99,10 +101,10 @@ export default function Home() {
         </motion.div>
 
         {/* Secondary Action */}
-        <button className="mt-6 flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">
+        <Link to={createPageUrl('Records')} className="mt-6 flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">
           <FolderOpen className="w-5 h-5" />
           <span className="text-base">View All Records</span>
-        </button>
+        </Link>
       </main>
 
       {/* Footer */}
