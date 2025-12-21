@@ -10,6 +10,8 @@ import { base44 } from '@/api/base44Client';
 export default function DocumentPreview({ imagePreview, file, onBack, onSaved }) {
   const [title, setTitle] = useState('');
   const [documentType, setDocumentType] = useState('');
+  const [doctorName, setDoctorName] = useState('');
+  const [recordDate, setRecordDate] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [analyzing, setAnalyzing] = useState(true);
@@ -31,7 +33,9 @@ export default function DocumentPreview({ imagePreview, file, onBack, onSaved })
       prompt: `Analyze this medical document image and extract the following information:
 - title: A brief, descriptive title for this document (e.g., "Blood Test Results - June 2024")
 - document_type: Classify as one of: prescription, lab_report, imaging, discharge_summary, insurance, or other
-- notes: Extract key information, dates, doctor names, or any important details from the document
+- doctor_name: Extract the doctor's or healthcare provider's name if visible
+- record_date: Extract the date on the document (format: YYYY-MM-DD)
+- notes: Extract key information, test results, medications, or any important details from the document
 
 Be concise and accurate. If you cannot determine something with confidence, leave it empty.`,
       file_urls: [file_url],
@@ -40,6 +44,8 @@ Be concise and accurate. If you cannot determine something with confidence, leav
         properties: {
           title: { type: "string" },
           document_type: { type: "string" },
+          doctor_name: { type: "string" },
+          record_date: { type: "string" },
           notes: { type: "string" }
         }
       }
@@ -48,6 +54,8 @@ Be concise and accurate. If you cannot determine something with confidence, leav
     // Auto-fill the form with extracted data
     if (extractedData.title) setTitle(extractedData.title);
     if (extractedData.document_type) setDocumentType(extractedData.document_type);
+    if (extractedData.doctor_name) setDoctorName(extractedData.doctor_name);
+    if (extractedData.record_date) setRecordDate(extractedData.record_date);
     if (extractedData.notes) setNotes(extractedData.notes);
     
     setAnalyzing(false);
@@ -63,6 +71,8 @@ Be concise and accurate. If you cannot determine something with confidence, leav
       title: title || 'Untitled Document',
       document_url: fileUrl,
       document_type: documentType || 'other',
+      doctor_name: doctorName,
+      record_date: recordDate,
       date_captured: new Date().toISOString().split('T')[0],
       notes: notes
     });
@@ -136,6 +146,34 @@ Be concise and accurate. If you cannot determine something with confidence, leav
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="doctor" className="text-sm font-medium text-gray-700">
+              Doctor's Name
+            </Label>
+            <Input
+              id="doctor"
+              placeholder="e.g., Dr. Smith"
+              value={doctorName}
+              onChange={(e) => setDoctorName(e.target.value)}
+              disabled={analyzing}
+              className="h-12 text-base border-gray-200 focus:border-[#5B9BD5] focus:ring-[#5B9BD5] disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="recordDate" className="text-sm font-medium text-gray-700">
+              Record Date
+            </Label>
+            <Input
+              id="recordDate"
+              type="date"
+              value={recordDate}
+              onChange={(e) => setRecordDate(e.target.value)}
+              disabled={analyzing}
+              className="h-12 text-base border-gray-200 focus:border-[#5B9BD5] focus:ring-[#5B9BD5] disabled:opacity-50 disabled:cursor-not-allowed"
+            />
           </div>
 
           <div className="space-y-2">
