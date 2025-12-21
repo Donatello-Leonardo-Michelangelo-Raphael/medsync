@@ -3,7 +3,7 @@ import { Camera, FileText, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from './utils';
+import { createPageUrl } from '../utils';
 import CameraCapture from '@/components/CameraCapture';
 import ConfirmPhoto from '@/components/ConfirmPhoto';
 import DocumentPreview from '@/components/DocumentPreview';
