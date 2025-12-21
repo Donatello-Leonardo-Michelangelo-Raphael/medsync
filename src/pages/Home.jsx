@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, FileText, FolderOpen } from 'lucide-react';
+import { Camera, FileText, FolderOpen, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -7,10 +7,11 @@ import { createPageUrl } from '../utils';
 import CameraCapture from '@/components/CameraCapture';
 import ConfirmPhoto from '@/components/ConfirmPhoto';
 import DocumentPreview from '@/components/DocumentPreview';
+import SearchRecords from '@/components/SearchRecords';
 import { toast } from 'sonner';
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState('home'); // home, camera, confirm, preview
+  const [currentStep, setCurrentStep] = useState('home'); // home, camera, confirm, preview, search
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
 
@@ -51,16 +52,30 @@ export default function Home() {
     setCurrentStep('confirm');
   };
 
+  const handleOpenSearch = () => {
+    setCurrentStep('search');
+  };
+
+  const handleCloseSearch = () => {
+    setCurrentStep('home');
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <header className="px-6 py-4 border-b border-gray-100">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3">
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/user_6947f41fb4081c02105700f9/4ad0fbca1_logo-removebg-preview.png"
             alt="MedSync"
             className="h-10 object-contain"
           />
+          <button 
+            onClick={handleOpenSearch}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <Search className="w-6 h-6 text-gray-600" />
+          </button>
         </div>
       </header>
 
@@ -159,6 +174,17 @@ export default function Home() {
               onBack={handleBackToConfirm}
               onSaved={handleSaved}
             />
+          </motion.div>
+        )}
+
+        {currentStep === 'search' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <SearchRecords onClose={handleCloseSearch} />
           </motion.div>
         )}
       </AnimatePresence>
