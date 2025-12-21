@@ -30,14 +30,31 @@ export default function DocumentPreview({ imagePreview, file, onBack, onSaved })
     
     // Analyze the document with AI
     const extractedData = await base44.integrations.Core.InvokeLLM({
-      prompt: `Analyze this medical document image and extract the following information:
-- title: A brief, descriptive title for this document (e.g., "Blood Test Results - June 2024")
-- document_type: Classify as one of: prescription, lab_report, imaging, discharge_summary, insurance, or other
-- doctor_name: Extract the doctor's or healthcare provider's name if visible
-- record_date: Extract the date on the document (format: YYYY-MM-DD)
-- notes: Extract key information, test results, medications, or any important details from the document
+      prompt: `You are an OCR and medical document analysis expert. Read ALL visible text in this medical document image carefully and extract the following information:
 
-Be concise and accurate. If you cannot determine something with confidence, leave it empty.`,
+1. title: Create a descriptive title based on the document type and content (e.g., "Medical Certificate - Dr. Smith", "Blood Test Results - June 2024")
+
+2. document_type: Classify as one of these categories:
+   - prescription: if it's a medication prescription
+   - lab_report: if it contains test results, lab values
+   - imaging: if it's an X-ray, MRI, CT scan report
+   - discharge_summary: if it's a hospital discharge document
+   - insurance: if it's related to insurance or billing
+   - other: for medical certificates, sick notes, referrals, or anything else
+
+3. doctor_name: Extract the full name of any doctor, physician, or healthcare provider mentioned. Look for "Dr.", signatures, letterheads, or provider information.
+
+4. record_date: Find any date on the document - issue date, visit date, or test date. Format as YYYY-MM-DD. Look carefully at the top or bottom of the document.
+
+5. notes: Extract ALL important information you can read from the document including:
+   - Patient conditions or diagnoses mentioned
+   - Any medical advice or recommendations
+   - Test results or values
+   - Medication names and dosages
+   - Valid periods (e.g., "valid from X to Y")
+   - Any other relevant medical information
+
+Read every word carefully, including headers, footers, and small text. If you see text but can't read it clearly, still try your best to extract what you can.`,
       file_urls: [file_url],
       response_json_schema: {
         type: "object",
