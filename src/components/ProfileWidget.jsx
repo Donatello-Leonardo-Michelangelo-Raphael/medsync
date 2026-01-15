@@ -10,8 +10,9 @@ export default function ProfileWidget() {
     queryFn: () => base44.auth.me()
   });
 
-  const handleSignOut = () => {
-    base44.auth.logout();
+  const handleSignOut = async () => {
+    await base44.auth.logout();
+    base44.auth.redirectToLogin();
   };
 
   if (!user) return null;
