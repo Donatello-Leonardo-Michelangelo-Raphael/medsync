@@ -8,6 +8,7 @@ import CameraCapture from '@/components/CameraCapture';
 import ConfirmPhoto from '@/components/ConfirmPhoto';
 import DocumentPreview from '@/components/DocumentPreview';
 import SearchRecords from '@/components/SearchRecords';
+import ProfileWidget from '@/components/ProfileWidget';
 import { toast } from 'sonner';
 
 export default function Home() {
@@ -123,11 +124,14 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="px-6 py-4 text-center">
-        <p className="text-xs text-gray-400">
+      <footer className="text-center pb-2">
+        <p className="text-xs text-gray-400 px-6 py-2">
           Your data is securely stored
         </p>
       </footer>
+
+      {/* Profile Widget */}
+      <ProfileWidget />
 
       {/* Overlays */}
       <AnimatePresence>
