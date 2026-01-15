@@ -32,10 +32,10 @@ export default function ProfileWidget() {
           onClick={handleSignOut}
           variant="outline"
           size="sm"
-          className="flex-shrink-0 border-gray-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+          className="flex-shrink-0 border-gray-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600 flex items-center justify-center"
         >
           <LogOut className="w-4 h-4 mr-1.5" />
-          Sign Out
+          <span>Sign Out</span>
         </Button>
       </div>
     </div>
