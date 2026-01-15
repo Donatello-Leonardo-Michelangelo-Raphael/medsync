@@ -17,11 +17,11 @@ export default function ProfileWidget() {
   if (!user) return null;
 
   return (
-    <div className="bg-white border-t border-gray-100 px-6 py-4">
+    <div className="bg-white border-t border-gray-100 px-6 py-2">
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="w-10 h-10 rounded-full bg-[#5B9BD5]/10 flex items-center justify-center flex-shrink-0">
-            <User className="w-5 h-5 text-[#5B9BD5]" />
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className="w-8 h-8 rounded-full bg-[#5B9BD5]/10 flex items-center justify-center flex-shrink-0">
+            <User className="w-4 h-4 text-[#5B9BD5]" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-medium text-black text-sm truncate">{user.full_name || 'User'}</p>

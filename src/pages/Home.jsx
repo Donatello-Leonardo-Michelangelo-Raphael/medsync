@@ -81,24 +81,24 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-12">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-4">
         {/* Decorative Shape */}
-        <div className="mb-10">
-          <div className="w-32 h-32 relative">
+        <div className="mb-4">
+          <div className="w-20 h-20 relative">
             {/* Abstract geometric shape */}
-            <div className="absolute inset-0 rounded-3xl bg-[#5B9BD5]/10 rotate-6" />
-            <div className="absolute inset-0 rounded-3xl bg-[#5B9BD5]/20 -rotate-6" />
-            <div className="absolute inset-0 rounded-3xl bg-white border-2 border-[#5B9BD5]/30 flex items-center justify-center">
-              <FileText className="w-14 h-14 text-[#5B9BD5]" />
+            <div className="absolute inset-0 rounded-2xl bg-[#5B9BD5]/10 rotate-6" />
+            <div className="absolute inset-0 rounded-2xl bg-[#5B9BD5]/20 -rotate-6" />
+            <div className="absolute inset-0 rounded-2xl bg-white border-2 border-[#5B9BD5]/30 flex items-center justify-center">
+              <FileText className="w-9 h-9 text-[#5B9BD5]" />
             </div>
           </div>
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-semibold text-black text-center mb-3">
+        <h1 className="text-xl font-semibold text-black text-center mb-2">
           Medical Records
         </h1>
-        <p className="text-gray-500 text-center text-base mb-12 max-w-xs">
+        <p className="text-gray-500 text-center text-sm mb-6 max-w-xs">
           Scan and organize your medical documents in one place
         </p>
 
@@ -109,23 +109,23 @@ export default function Home() {
         >
           <Button
             onClick={handleStartScan}
-            className="w-full h-16 text-lg font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white rounded-2xl shadow-lg shadow-[#5B9BD5]/25"
+            className="w-full h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white rounded-2xl shadow-lg shadow-[#5B9BD5]/25"
           >
-            <Camera className="w-6 h-6 mr-3" />
+            <Camera className="w-5 h-5 mr-2" />
             Scan Document
           </Button>
         </motion.div>
 
         {/* Secondary Action */}
-        <Link to={createPageUrl('Records')} className="mt-6 flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">
-          <FolderOpen className="w-5 h-5" />
-          <span className="text-base">View All Records</span>
+        <Link to={createPageUrl('Records')} className="mt-4 flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">
+          <FolderOpen className="w-4 h-4" />
+          <span className="text-sm">View All Records</span>
         </Link>
       </main>
 
       {/* Footer */}
-      <footer className="text-center pb-2">
-        <p className="text-xs text-gray-400 px-6 py-2">
+      <footer className="text-center">
+        <p className="text-xs text-gray-400 px-6 py-1">
           Your data is securely stored
         </p>
       </footer>
