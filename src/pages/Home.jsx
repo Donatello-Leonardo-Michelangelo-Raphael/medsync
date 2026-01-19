@@ -112,7 +112,7 @@ export default function Home() {
             className="w-full h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white rounded-2xl shadow-lg shadow-[#5B9BD5]/25"
           >
             <Camera className="w-5 h-5 mr-2" />
-            Scan Document
+            Upload Document
           </Button>
         </motion.div>
 
