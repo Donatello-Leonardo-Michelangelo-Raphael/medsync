@@ -38,33 +38,53 @@ export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onTak
           Is the document clear and readable?
         </p>
         <div className="space-y-3">
-          {showTakeAnother && (
-            <Button
-              onClick={onTakeAnother}
-              variant="outline"
-              className="w-full h-14 text-base font-medium border-2 border-[#5B9BD5] text-[#5B9BD5] hover:bg-[#5B9BD5]/5"
-            >
-              <Camera className="w-5 h-5 mr-2" />
-              Take Another Photo
-            </Button>
+          {showTakeAnother ? (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  onClick={onRetake}
+                  variant="outline"
+                  className="h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                >
+                  <RotateCcw className="w-5 h-5 mr-2" />
+                  Retry
+                </Button>
+                <Button
+                  onClick={onTakeAnother}
+                  variant="outline"
+                  className="h-14 text-base font-medium border-2 border-[#5B9BD5] text-[#5B9BD5] hover:bg-[#5B9BD5]/5"
+                >
+                  <Camera className="w-5 h-5 mr-2" />
+                  Take Another
+                </Button>
+              </div>
+              <Button
+                onClick={onContinue}
+                className="w-full h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
+              >
+                <Check className="w-5 h-5 mr-2" />
+                {queuedCount > 0 ? 'Upload All' : 'Continue'}
+              </Button>
+            </>
+          ) : (
+            <div className="flex gap-4">
+              <Button
+                onClick={onRetake}
+                variant="outline"
+                className="flex-1 h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+              >
+                <RotateCcw className="w-5 h-5 mr-2" />
+                Retake
+              </Button>
+              <Button
+                onClick={onContinue}
+                className="flex-1 h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
+              >
+                <Check className="w-5 h-5 mr-2" />
+                Continue
+              </Button>
+            </div>
           )}
-          <div className="flex gap-4">
-            <Button
-              onClick={onRetake}
-              variant="outline"
-              className="flex-1 h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-            >
-              <RotateCcw className="w-5 h-5 mr-2" />
-              Retake
-            </Button>
-            <Button
-              onClick={onContinue}
-              className="flex-1 h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
-            >
-              <Check className="w-5 h-5 mr-2" />
-              {queuedCount > 0 ? 'Upload All' : 'Continue'}
-            </Button>
-          </div>
         </div>
       </div>
     </div>
