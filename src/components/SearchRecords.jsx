@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../utils';
 
 export default function SearchRecords({ onClose }) {
   const [query, setQuery] = useState('');
@@ -142,38 +144,43 @@ Return the matching record IDs in order of relevance.`,
                   key={record.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
                 >
-                  <div className="flex gap-3">
-                    <img
-                      src={record.document_url}
-                      alt={record.title}
-                      className="w-16 h-20 object-cover rounded-lg border border-gray-200 flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-black mb-1">{record.title}</h3>
-                      <div className="space-y-1">
-                        {record.doctor_name && (
-                          <div className="flex items-center gap-1 text-sm text-gray-600">
-                            <User className="w-3.5 h-3.5 flex-shrink-0" />
-                            <span className="truncate">{record.doctor_name}</span>
+                  <Link
+                    to={createPageUrl('DocumentDetail') + '?id=' + record.id}
+                    className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow block"
+                    onClick={onClose}
+                  >
+                    <div className="flex gap-3">
+                      <img
+                        src={record.document_url}
+                        alt={record.title}
+                        className="w-16 h-20 object-cover rounded-lg border border-gray-200 flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-black mb-1">{record.title}</h3>
+                        <div className="space-y-1">
+                          {record.doctor_name && (
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <User className="w-3.5 h-3.5 flex-shrink-0" />
+                              <span className="truncate">{record.doctor_name}</span>
+                            </div>
+                          )}
+                          {record.record_date && (
+                            <div className="flex items-center gap-1 text-sm text-gray-500">
+                              <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                              <span>{new Date(record.record_date).toLocaleDateString()}</span>
+                            </div>
+                          )}
+                          <div className="inline-block px-2 py-0.5 bg-[#5B9BD5]/10 text-[#5B9BD5] text-xs rounded-md">
+                            {record.document_type.replace('_', ' ')}
                           </div>
-                        )}
-                        {record.record_date && (
-                          <div className="flex items-center gap-1 text-sm text-gray-500">
-                            <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
-                            <span>{new Date(record.record_date).toLocaleDateString()}</span>
-                          </div>
-                        )}
-                        <div className="inline-block px-2 py-0.5 bg-[#5B9BD5]/10 text-[#5B9BD5] text-xs rounded-md">
-                          {record.document_type.replace('_', ' ')}
                         </div>
                       </div>
                     </div>
-                  </div>
-                  {record.notes && (
-                    <p className="text-sm text-gray-600 mt-3 line-clamp-2">{record.notes}</p>
-                  )}
+                    {record.notes && (
+                      <p className="text-sm text-gray-600 mt-3 line-clamp-2">{record.notes}</p>
+                    )}
+                  </Link>
                 </motion.div>
               ))}
             </motion.div>
