@@ -19,6 +19,7 @@ export default function Records() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
   const [batchFiles, setBatchFiles] = useState([]);
+  const [queuedPhotos, setQueuedPhotos] = useState([]);
   const [fromCamera, setFromCamera] = useState(false);
   const fileInputRef = React.useRef(null);
   const cameraInputRef = React.useRef(null);
@@ -79,7 +80,26 @@ export default function Records() {
   };
 
   const handleContinue = () => {
-    setCurrentStep('preview');
+    // If from camera and have queued photos, process all as batch
+    if (fromCamera && queuedPhotos.length > 0) {
+      const allPhotos = [...queuedPhotos, capturedFile];
+      setBatchFiles(allPhotos);
+      setQueuedPhotos([]);
+      setCapturedImage(null);
+      setCapturedFile(null);
+      setCurrentStep('batch');
+    } else {
+      setCurrentStep('preview');
+    }
+  };
+
+  const handleTakeAnotherPhoto = () => {
+    // Add current photo to queue
+    setQueuedPhotos([...queuedPhotos, capturedFile]);
+    setCapturedImage(null);
+    setCapturedFile(null);
+    // Trigger camera again
+    cameraInputRef.current?.click();
   };
 
   const handleSaved = () => {
@@ -111,6 +131,8 @@ export default function Records() {
   const handleBatchComplete = () => {
     toast.success('All documents uploaded successfully');
     setBatchFiles([]);
+    setQueuedPhotos([]);
+    setFromCamera(false);
     setCurrentStep(null);
     window.location.reload();
   };
@@ -119,6 +141,7 @@ export default function Records() {
     setCapturedImage(null);
     setCapturedFile(null);
     setBatchFiles([]);
+    setQueuedPhotos([]);
     setFromCamera(false);
     setCurrentStep(null);
   };
@@ -316,7 +339,10 @@ export default function Records() {
               imagePreview={capturedImage}
               onRetake={handleRetake}
               onContinue={handleContinue}
+              onTakeAnother={handleTakeAnotherPhoto}
               onClose={handleClose}
+              showTakeAnother={fromCamera}
+              queuedCount={queuedPhotos.length}
             />
           </motion.div>
         )}

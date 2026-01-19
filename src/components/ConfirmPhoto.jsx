@@ -1,8 +1,8 @@
 import React from 'react';
-import { RotateCcw, Check, X } from 'lucide-react';
+import { RotateCcw, Check, X, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onClose }) {
+export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onTakeAnother, onClose, showTakeAnother = false, queuedCount = 0 }) {
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header */}
@@ -27,25 +27,44 @@ export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onClo
 
       {/* Action Buttons */}
       <div className="p-6 bg-white border-t border-gray-100">
+        {queuedCount > 0 && (
+          <div className="text-center mb-4 px-3 py-2 bg-[#5B9BD5]/10 rounded-lg">
+            <p className="text-sm font-medium text-[#5B9BD5]">
+              {queuedCount} photo{queuedCount !== 1 ? 's' : ''} queued
+            </p>
+          </div>
+        )}
         <p className="text-center text-gray-600 text-sm mb-6">
           Is the document clear and readable?
         </p>
-        <div className="flex gap-4">
-          <Button
-            onClick={onRetake}
-            variant="outline"
-            className="flex-1 h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-          >
-            <RotateCcw className="w-5 h-5 mr-2" />
-            Retake
-          </Button>
-          <Button
-            onClick={onContinue}
-            className="flex-1 h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
-          >
-            <Check className="w-5 h-5 mr-2" />
-            Continue
-          </Button>
+        <div className="space-y-3">
+          {showTakeAnother && (
+            <Button
+              onClick={onTakeAnother}
+              variant="outline"
+              className="w-full h-14 text-base font-medium border-2 border-[#5B9BD5] text-[#5B9BD5] hover:bg-[#5B9BD5]/5"
+            >
+              <Camera className="w-5 h-5 mr-2" />
+              Take Another Photo
+            </Button>
+          )}
+          <div className="flex gap-4">
+            <Button
+              onClick={onRetake}
+              variant="outline"
+              className="flex-1 h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+            >
+              <RotateCcw className="w-5 h-5 mr-2" />
+              Retake
+            </Button>
+            <Button
+              onClick={onContinue}
+              className="flex-1 h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
+            >
+              <Check className="w-5 h-5 mr-2" />
+              {queuedCount > 0 ? 'Upload All' : 'Continue'}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
