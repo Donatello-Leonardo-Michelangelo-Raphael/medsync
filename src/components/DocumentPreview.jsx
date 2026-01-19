@@ -9,7 +9,7 @@ import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 
-export default function DocumentPreview({ imagePreview, file, onBack, onSaved }) {
+export default function DocumentPreview({ imagePreview, file, onBack, onSaved, fromCamera = false, onTakeAnother }) {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [documentType, setDocumentType] = useState('');
@@ -88,7 +88,7 @@ Read every word carefully, including headers, footers, and small text. If you se
     const fileUrl = uploadedFileUrl || (await base44.integrations.Core.UploadFile({ file })).file_url;
     
     const savedDocType = documentType || 'other';
-    
+
     await base44.entities.MedicalRecord.create({
       title: title || 'Untitled Document',
       document_url: fileUrl,
@@ -98,12 +98,17 @@ Read every word carefully, including headers, footers, and small text. If you se
       date_captured: new Date().toISOString().split('T')[0],
       notes: notes
     });
-    
+
     setSaving(false);
-    
-    // Navigate to Records page with the folder pre-selected
-    navigate(createPageUrl('Records') + '?folder=' + savedDocType);
-  };
+
+    // If from camera and onTakeAnother provided, show option to take another
+    if (fromCamera && onTakeAnother) {
+      onSaved();
+    } else {
+      // Navigate to Records page with the folder pre-selected
+      navigate(createPageUrl('Records') + '?folder=' + savedDocType);
+    }
+    };
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">

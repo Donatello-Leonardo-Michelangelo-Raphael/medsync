@@ -1,8 +1,8 @@
 import React from 'react';
-import { RotateCcw, Check, X, Plus } from 'lucide-react';
+import { RotateCcw, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onAddAnother, onClose, showAddAnother = false }) {
+export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onClose }) {
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header */}
@@ -30,33 +30,22 @@ export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onAdd
         <p className="text-center text-gray-600 text-sm mb-6">
           Is the document clear and readable?
         </p>
-        <div className="space-y-3">
-          {showAddAnother && (
-            <Button
-              onClick={onAddAnother}
-              className="w-full h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Add Another Photo
-            </Button>
-          )}
-          <div className="flex gap-4">
-            <Button
-              onClick={onRetake}
-              variant="outline"
-              className="flex-1 h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-            >
-              <RotateCcw className="w-5 h-5 mr-2" />
-              Retake
-            </Button>
-            <Button
-              onClick={onContinue}
-              className="flex-1 h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
-            >
-              <Check className="w-5 h-5 mr-2" />
-              {showAddAnother ? 'Upload All' : 'Continue'}
-            </Button>
-          </div>
+        <div className="flex gap-4">
+          <Button
+            onClick={onRetake}
+            variant="outline"
+            className="flex-1 h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+          >
+            <RotateCcw className="w-5 h-5 mr-2" />
+            Retake
+          </Button>
+          <Button
+            onClick={onContinue}
+            className="flex-1 h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
+          >
+            <Check className="w-5 h-5 mr-2" />
+            Continue
+          </Button>
         </div>
       </div>
     </div>

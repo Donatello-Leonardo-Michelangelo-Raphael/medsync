@@ -18,7 +18,7 @@ export default function Records() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
   const [batchFiles, setBatchFiles] = useState([]);
-  const [cameraPhotos, setCameraPhotos] = useState([]);
+  const [fromCamera, setFromCamera] = useState(false);
   const fileInputRef = React.useRef(null);
   const cameraInputRef = React.useRef(null);
 
@@ -76,33 +76,31 @@ export default function Records() {
   };
 
   const handleContinue = () => {
-    // Check if we have camera photos queued
-    if (cameraPhotos.length > 0) {
-      // Add current photo and upload all
-      const allPhotos = [...cameraPhotos, capturedFile];
-      setBatchFiles(allPhotos);
-      setCameraPhotos([]);
-      setCapturedImage(null);
-      setCapturedFile(null);
-      setCurrentStep('batch');
-    } else {
-      setCurrentStep('preview');
-    }
-  };
-
-  const handleAddAnother = () => {
-    // Add current photo to queue
-    setCameraPhotos([...cameraPhotos, capturedFile]);
-    setCapturedImage(null);
-    setCapturedFile(null);
-    // Go back to camera
-    cameraInputRef.current?.click();
+    setCurrentStep('preview');
   };
 
   const handleSaved = () => {
     toast.success('Document saved successfully');
     setCapturedImage(null);
     setCapturedFile(null);
+    
+    // If from camera, show option to take another
+    if (fromCamera) {
+      setCurrentStep('saved');
+    } else {
+      setCurrentStep(null);
+      window.location.reload();
+    }
+  };
+
+  const handleTakeAnother = () => {
+    setFromCamera(true);
+    cameraInputRef.current?.click();
+    setCurrentStep(null);
+  };
+
+  const handleDoneScanning = () => {
+    setFromCamera(false);
     setCurrentStep(null);
     window.location.reload();
   };
@@ -117,8 +115,8 @@ export default function Records() {
   const handleClose = () => {
     setCapturedImage(null);
     setCapturedFile(null);
-    setCameraPhotos([]);
     setBatchFiles([]);
+    setFromCamera(false);
     setCurrentStep(null);
   };
 
@@ -315,9 +313,7 @@ export default function Records() {
               imagePreview={capturedImage}
               onRetake={handleRetake}
               onContinue={handleContinue}
-              onAddAnother={handleAddAnother}
               onClose={handleClose}
-              showAddAnother={cameraPhotos.length > 0 || currentStep === 'confirm'}
             />
           </motion.div>
         )}
@@ -334,6 +330,8 @@ export default function Records() {
               file={capturedFile}
               onBack={handleBackToConfirm}
               onSaved={handleSaved}
+              fromCamera={fromCamera}
+              onTakeAnother={handleTakeAnother}
             />
           </motion.div>
         )}
@@ -350,6 +348,43 @@ export default function Records() {
               onComplete={handleBatchComplete}
               onClose={handleClose}
             />
+          </motion.div>
+        )}
+
+        {currentStep === 'saved' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6">
+              <div className="bg-white rounded-3xl p-6 max-w-sm w-full">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Check className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h2 className="text-xl font-semibold text-black mb-2">Document Saved!</h2>
+                  <p className="text-gray-600 text-sm">Would you like to scan another document?</p>
+                </div>
+                <div className="space-y-3">
+                  <Button
+                    onClick={handleTakeAnother}
+                    className="w-full h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
+                  >
+                    <Camera className="w-5 h-5 mr-2" />
+                    Scan Another
+                  </Button>
+                  <Button
+                    onClick={handleDoneScanning}
+                    variant="outline"
+                    className="w-full h-14 text-base font-medium"
+                  >
+                    Done
+                  </Button>
+                </div>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
