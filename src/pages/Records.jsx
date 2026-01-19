@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Folder, FileText, Calendar, User, ChevronRight, Plus, Camera, Image } from 'lucide-react';
+import { ArrowLeft, Folder, FileText, Calendar, User, ChevronRight, Plus, Camera, Image, Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -36,11 +37,13 @@ export default function Records() {
   };
 
   const handleSelectGallery = () => {
+    setFromCamera(false);
     fileInputRef.current?.click();
     setCurrentStep(null);
   };
 
   const handleSelectCamera = () => {
+    setFromCamera(true);
     cameraInputRef.current?.click();
     setCurrentStep(null);
   };
