@@ -38,61 +38,54 @@ export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onUpl
           Is the document clear and readable?
         </p>
         <div className="space-y-3">
-          {showTakeAnother ? (
-            <>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  onClick={onRetake}
-                  variant="outline"
-                  className="h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                >
-                  <RotateCcw className="w-5 h-5 mr-2" />
-                  Retry
-                </Button>
-                <Button
-                  onClick={onTakeAnother}
-                  variant="outline"
-                  className="h-14 text-base font-medium border-2 border-[#5B9BD5] text-[#5B9BD5] hover:bg-[#5B9BD5]/5"
-                >
-                  <Camera className="w-5 h-5 mr-2" />
-                  Take Another
-                </Button>
-              </div>
-              <Button
-                onClick={onContinue}
-                className="w-full h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
-              >
-                <Check className="w-5 h-5 mr-2" />
-                Continue
-              </Button>
-              {queuedCount > 0 && (
-                <Button
-                  onClick={onUploadAll}
-                  variant="outline"
-                  className="w-full h-12 text-sm font-medium border-2 border-green-500 text-green-600 hover:bg-green-50"
-                >
-                  Upload All ({queuedCount + 1} photos)
-                </Button>
-              )}
-            </>
-          ) : (
-            <div className="flex gap-4">
+          {showTakeAnother && (
+            <div className="grid grid-cols-2 gap-3">
               <Button
                 onClick={onRetake}
                 variant="outline"
-                className="flex-1 h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                className="h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
               >
                 <RotateCcw className="w-5 h-5 mr-2" />
-                Retake
+                Retry
               </Button>
               <Button
-                onClick={onContinue}
-                className="flex-1 h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
+                onClick={onTakeAnother}
+                variant="outline"
+                className="h-14 text-base font-medium border-2 border-[#5B9BD5] text-[#5B9BD5] hover:bg-[#5B9BD5]/5"
               >
-                <Check className="w-5 h-5 mr-2" />
-                Continue
+                <Camera className="w-5 h-5 mr-2" />
+                Take Another
               </Button>
             </div>
+          )}
+          
+          {!showTakeAnother && (
+            <Button
+              onClick={onRetake}
+              variant="outline"
+              className="w-full h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+            >
+              <RotateCcw className="w-5 h-5 mr-2" />
+              Retake
+            </Button>
+          )}
+
+          <Button
+            onClick={onContinue}
+            className="w-full h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
+          >
+            <Check className="w-5 h-5 mr-2" />
+            Continue
+          </Button>
+
+          {showTakeAnother && queuedCount > 0 && (
+            <Button
+              onClick={onUploadAll}
+              variant="outline"
+              className="w-full h-12 text-sm font-medium border-2 border-green-500 text-green-600 hover:bg-green-50"
+            >
+              Upload All ({queuedCount + 1} photos)
+            </Button>
           )}
         </div>
       </div>
