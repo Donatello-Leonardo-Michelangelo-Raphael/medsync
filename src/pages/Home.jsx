@@ -9,14 +9,23 @@ import ConfirmPhoto from '@/components/ConfirmPhoto';
 import DocumentPreview from '@/components/DocumentPreview';
 import SearchRecords from '@/components/SearchRecords';
 import ProfileWidget from '@/components/ProfileWidget';
+import UploadOptions from '@/components/UploadOptions';
 import { toast } from 'sonner';
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState('home'); // home, camera, confirm, preview, search
+  const [currentStep, setCurrentStep] = useState('home'); // home, options, camera, confirm, preview, search
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
 
   const handleStartScan = () => {
+    setCurrentStep('options');
+  };
+
+  const handleSelectGallery = () => {
+    setCurrentStep('camera');
+  };
+
+  const handleSelectCamera = () => {
     setCurrentStep('camera');
   };
 
@@ -135,6 +144,21 @@ export default function Home() {
 
       {/* Overlays */}
       <AnimatePresence>
+        {currentStep === 'options' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <UploadOptions
+              onSelectGallery={handleSelectGallery}
+              onSelectCamera={handleSelectCamera}
+              onClose={handleClose}
+            />
+          </motion.div>
+        )}
+
         {currentStep === 'camera' && (
           <motion.div
             initial={{ opacity: 0 }}
