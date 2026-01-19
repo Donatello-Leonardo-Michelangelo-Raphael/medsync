@@ -2,7 +2,7 @@ import React from 'react';
 import { RotateCcw, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onClose }) {
+export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onAddAnother, onClose, showAddAnother = false }) {
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header */}

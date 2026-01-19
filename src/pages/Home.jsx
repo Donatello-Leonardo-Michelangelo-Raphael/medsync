@@ -18,6 +18,7 @@ export default function Home() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
   const [batchFiles, setBatchFiles] = useState([]);
+  const [cameraPhotos, setCameraPhotos] = useState([]);
   const fileInputRef = React.useRef(null);
   const cameraInputRef = React.useRef(null);
 
@@ -72,7 +73,27 @@ export default function Home() {
   };
 
   const handleContinue = () => {
-    setCurrentStep('preview');
+    // Check if we have camera photos queued
+    if (cameraPhotos.length > 0) {
+      // Add current photo and upload all
+      const allPhotos = [...cameraPhotos, capturedFile];
+      setBatchFiles(allPhotos);
+      setCameraPhotos([]);
+      setCapturedImage(null);
+      setCapturedFile(null);
+      setCurrentStep('batch');
+    } else {
+      setCurrentStep('preview');
+    }
+  };
+
+  const handleAddAnother = () => {
+    // Add current photo to queue
+    setCameraPhotos([...cameraPhotos, capturedFile]);
+    setCapturedImage(null);
+    setCapturedFile(null);
+    // Go back to camera
+    cameraInputRef.current?.click();
   };
 
   const handleSaved = () => {
@@ -91,6 +112,8 @@ export default function Home() {
   const handleClose = () => {
     setCapturedImage(null);
     setCapturedFile(null);
+    setCameraPhotos([]);
+    setBatchFiles([]);
     setCurrentStep('home');
   };
 
@@ -240,7 +263,9 @@ export default function Home() {
               imagePreview={capturedImage}
               onRetake={handleRetake}
               onContinue={handleContinue}
+              onAddAnother={handleAddAnother}
               onClose={handleClose}
+              showAddAnother={cameraPhotos.length > 0 || currentStep === 'confirm'}
             />
           </motion.div>
         )}
