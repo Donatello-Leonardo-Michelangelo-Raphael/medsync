@@ -38,7 +38,30 @@ export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onUpl
           Is the document clear and readable?
         </p>
         <div className="space-y-3">
-          {showTakeAnother && (
+          {showTakeAnother ? (
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                onClick={onRetake}
+                variant="outline"
+                className="h-14 text-sm font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </Button>
+              <Button
+                onClick={onTakeAnother}
+                variant="outline"
+                className="h-14 text-sm font-medium border-2 border-[#5B9BD5] text-[#5B9BD5] hover:bg-[#5B9BD5]/5"
+              >
+                <Camera className="w-4 h-4" />
+              </Button>
+              <Button
+                onClick={onContinue}
+                className="h-14 text-sm font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
+              >
+                <Check className="w-4 h-4" />
+              </Button>
+            </div>
+          ) : (
             <div className="grid grid-cols-2 gap-3">
               <Button
                 onClick={onRetake}
@@ -46,37 +69,17 @@ export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onUpl
                 className="h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
               >
                 <RotateCcw className="w-5 h-5 mr-2" />
-                Retry
+                Retake
               </Button>
               <Button
-                onClick={onTakeAnother}
-                variant="outline"
-                className="h-14 text-base font-medium border-2 border-[#5B9BD5] text-[#5B9BD5] hover:bg-[#5B9BD5]/5"
+                onClick={onContinue}
+                className="h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
               >
-                <Camera className="w-5 h-5 mr-2" />
-                Take Another
+                <Check className="w-5 h-5 mr-2" />
+                Continue
               </Button>
             </div>
           )}
-          
-          {!showTakeAnother && (
-            <Button
-              onClick={onRetake}
-              variant="outline"
-              className="w-full h-14 text-base font-medium border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-            >
-              <RotateCcw className="w-5 h-5 mr-2" />
-              Retake
-            </Button>
-          )}
-
-          <Button
-            onClick={onContinue}
-            className="w-full h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
-          >
-            <Check className="w-5 h-5 mr-2" />
-            Continue
-          </Button>
 
           {showTakeAnother && queuedCount > 0 && (
             <Button
