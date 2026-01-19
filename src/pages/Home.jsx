@@ -10,13 +10,14 @@ import DocumentPreview from '@/components/DocumentPreview';
 import SearchRecords from '@/components/SearchRecords';
 import ProfileWidget from '@/components/ProfileWidget';
 import UploadOptions from '@/components/UploadOptions';
+import BatchUpload from '@/components/BatchUpload';
 import { toast } from 'sonner';
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState('home'); // home, options, camera, confirm, preview, search
+  const [currentStep, setCurrentStep] = useState('home'); // home, options, camera, confirm, preview, search, batch
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
-  const [imageQueue, setImageQueue] = useState([]);
+  const [batchFiles, setBatchFiles] = useState([]);
   const fileInputRef = React.useRef(null);
   const cameraInputRef = React.useRef(null);
 
@@ -40,25 +41,20 @@ export default function Home() {
     
     if (imageFiles.length === 0) return;
 
-    // Process all images
-    const imagePromises = imageFiles.map(file => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          resolve({ preview: event.target.result, file });
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(imagePromises).then(images => {
-      // Set the first image for preview
-      setCapturedImage(images[0].preview);
-      setCapturedFile(images[0].file);
-      // Queue the rest
-      setImageQueue(images.slice(1));
-      setCurrentStep('confirm');
-    });
+    if (imageFiles.length > 1) {
+      // Multiple files - batch upload
+      setBatchFiles(imageFiles);
+      setCurrentStep('batch');
+    } else {
+      // Single file - normal flow
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setCapturedImage(event.target.result);
+        setCapturedFile(imageFiles[0]);
+        setCurrentStep('confirm');
+      };
+      reader.readAsDataURL(imageFiles[0]);
+    }
 
     e.target.value = '';
   };
@@ -81,21 +77,15 @@ export default function Home() {
 
   const handleSaved = () => {
     toast.success('Document saved successfully');
-    
-    // Check if there are more images in the queue
-    if (imageQueue.length > 0) {
-      // Move to next image
-      const nextImage = imageQueue[0];
-      setCapturedImage(nextImage.preview);
-      setCapturedFile(nextImage.file);
-      setImageQueue(imageQueue.slice(1));
-      setCurrentStep('confirm');
-    } else {
-      // All done
-      setCapturedImage(null);
-      setCapturedFile(null);
-      setCurrentStep('home');
-    }
+    setCapturedImage(null);
+    setCapturedFile(null);
+    setCurrentStep('home');
+  };
+
+  const handleBatchComplete = () => {
+    toast.success('All documents uploaded successfully');
+    setBatchFiles([]);
+    setCurrentStep('home');
   };
 
   const handleClose = () => {
@@ -279,6 +269,21 @@ export default function Home() {
             transition={{ duration: 0.2 }}
           >
             <SearchRecords onClose={handleCloseSearch} />
+          </motion.div>
+        )}
+
+        {currentStep === 'batch' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <BatchUpload
+              files={batchFiles}
+              onComplete={handleBatchComplete}
+              onClose={handleClose}
+            />
           </motion.div>
         )}
       </AnimatePresence>
