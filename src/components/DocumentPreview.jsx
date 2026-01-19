@@ -6,8 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '../utils';
 
 export default function DocumentPreview({ imagePreview, file, onBack, onSaved }) {
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [documentType, setDocumentType] = useState('');
   const [doctorName, setDoctorName] = useState('');
@@ -84,10 +87,12 @@ Read every word carefully, including headers, footers, and small text. If you se
     // Use the already uploaded file URL
     const fileUrl = uploadedFileUrl || (await base44.integrations.Core.UploadFile({ file })).file_url;
     
+    const savedDocType = documentType || 'other';
+    
     await base44.entities.MedicalRecord.create({
       title: title || 'Untitled Document',
       document_url: fileUrl,
-      document_type: documentType || 'other',
+      document_type: savedDocType,
       doctor_name: doctorName,
       record_date: recordDate,
       date_captured: new Date().toISOString().split('T')[0],
@@ -95,7 +100,9 @@ Read every word carefully, including headers, footers, and small text. If you se
     });
     
     setSaving(false);
-    onSaved();
+    
+    // Navigate to Records page with the folder pre-selected
+    navigate(createPageUrl('Records') + '?folder=' + savedDocType);
   };
 
   return (

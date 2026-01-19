@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Folder, FileText, Calendar, User, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -7,6 +7,15 @@ import { createPageUrl } from '../utils';
 
 export default function Records() {
   const [selectedFolder, setSelectedFolder] = useState(null);
+
+  // Check for folder parameter in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const folderParam = params.get('folder');
+    if (folderParam) {
+      setSelectedFolder(folderParam);
+    }
+  }, []);
 
   const { data: records = [], isLoading } = useQuery({
     queryKey: ['medical-records'],
