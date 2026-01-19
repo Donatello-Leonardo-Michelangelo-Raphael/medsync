@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Folder, FileText, Calendar, User, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Folder, FileText, Calendar, User, ChevronRight, Plus, Camera, Image } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import { AnimatePresence, motion } from 'framer-motion';
+import UploadOptions from '@/components/UploadOptions';
+import CameraCapture from '@/components/CameraCapture';
+import ConfirmPhoto from '@/components/ConfirmPhoto';
+import DocumentPreview from '@/components/DocumentPreview';
+import { toast } from 'sonner';
 
 export default function Records() {
   const [selectedFolder, setSelectedFolder] = useState(null);
+  const [currentStep, setCurrentStep] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [capturedFile, setCapturedFile] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const cameraInputRef = React.useRef(null);
 
   // Check for folder parameter in URL
   useEffect(() => {
@@ -16,6 +27,63 @@ export default function Records() {
       setSelectedFolder(folderParam);
     }
   }, []);
+
+  const handleAddDocument = () => {
+    setCurrentStep('options');
+  };
+
+  const handleSelectGallery = () => {
+    fileInputRef.current?.click();
+    setCurrentStep(null);
+  };
+
+  const handleSelectCamera = () => {
+    cameraInputRef.current?.click();
+    setCurrentStep(null);
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setCapturedImage(event.target.result);
+        setCapturedFile(file);
+        setCurrentStep('confirm');
+      };
+      reader.readAsDataURL(file);
+    }
+    e.target.value = '';
+  };
+
+  const handleRetake = () => {
+    setCapturedImage(null);
+    setCapturedFile(null);
+    setCurrentStep('options');
+  };
+
+  const handleContinue = () => {
+    setCurrentStep('preview');
+  };
+
+  const handleSaved = () => {
+    toast.success('Document saved successfully');
+    setCapturedImage(null);
+    setCapturedFile(null);
+    setCurrentStep(null);
+    // Refresh the page to show new document
+    window.location.reload();
+  };
+
+  const handleClose = () => {
+    setCapturedImage(null);
+    setCapturedFile(null);
+    setCurrentStep(null);
+  };
+
+  const handleBackToConfirm = () => {
+    setCurrentStep('confirm');
+  };
 
   const { data: records = [], isLoading } = useQuery({
     queryKey: ['medical-records'],
@@ -151,6 +219,81 @@ export default function Records() {
           </div>
         )}
       </div>
+
+      {/* Floating Add Button */}
+      <button
+        onClick={handleAddDocument}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+      >
+        <Plus className="w-6 h-6" />
+      </button>
+
+      {/* Hidden File Inputs */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+
+      {/* Upload Overlays */}
+      <AnimatePresence>
+        {currentStep === 'options' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <UploadOptions
+              onSelectGallery={handleSelectGallery}
+              onSelectCamera={handleSelectCamera}
+              onClose={handleClose}
+            />
+          </motion.div>
+        )}
+
+        {currentStep === 'confirm' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ConfirmPhoto
+              imagePreview={capturedImage}
+              onRetake={handleRetake}
+              onContinue={handleContinue}
+              onClose={handleClose}
+            />
+          </motion.div>
+        )}
+
+        {currentStep === 'preview' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <DocumentPreview
+              imagePreview={capturedImage}
+              file={capturedFile}
+              onBack={handleBackToConfirm}
+              onSaved={handleSaved}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
