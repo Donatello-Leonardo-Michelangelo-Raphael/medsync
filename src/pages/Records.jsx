@@ -60,9 +60,10 @@ export default function Records() {
             </div>
           ) : (
             folderRecords.map(record => (
-              <div
+              <Link
                 key={record.id}
-                className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
+                to={createPageUrl('DocumentDetail') + '?id=' + record.id}
+                className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow block"
               >
                 <div className="flex gap-3">
                   <img
@@ -87,7 +88,7 @@ export default function Records() {
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </div>
