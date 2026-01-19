@@ -17,6 +17,7 @@ export default function Home() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
   const fileInputRef = React.useRef(null);
+  const cameraInputRef = React.useRef(null);
 
   const handleStartScan = () => {
     setCurrentStep('options');
@@ -28,7 +29,8 @@ export default function Home() {
   };
 
   const handleSelectCamera = () => {
-    setCurrentStep('camera');
+    cameraInputRef.current?.click();
+    setCurrentStep('home');
   };
 
   const handleFileSelect = (e) => {
@@ -162,6 +164,16 @@ export default function Home() {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+
+      {/* Hidden File Input for Camera */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
         onChange={handleFileSelect}
         className="hidden"
       />
