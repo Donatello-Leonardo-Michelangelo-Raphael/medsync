@@ -16,17 +16,32 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState('home'); // home, options, camera, confirm, preview, search
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
+  const fileInputRef = React.useRef(null);
 
   const handleStartScan = () => {
     setCurrentStep('options');
   };
 
   const handleSelectGallery = () => {
-    setCurrentStep('camera');
+    fileInputRef.current?.click();
+    setCurrentStep('home');
   };
 
   const handleSelectCamera = () => {
     setCurrentStep('camera');
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setCapturedImage(event.target.result);
+        setCapturedFile(file);
+        setCurrentStep('confirm');
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleCapture = (imageData, file) => {
@@ -141,6 +156,15 @@ export default function Home() {
 
       {/* Profile Widget */}
       <ProfileWidget />
+
+      {/* Hidden File Input for Gallery */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
 
       {/* Overlays */}
       <AnimatePresence>
