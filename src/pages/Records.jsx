@@ -80,7 +80,17 @@ export default function Records() {
   };
 
   const handleContinue = () => {
-    setCurrentStep('preview');
+    if (queuedPhotos.length > 0) {
+      // Process all queued photos plus current one as batch
+      const allPhotos = [...queuedPhotos, capturedFile];
+      setBatchFiles(allPhotos);
+      setQueuedPhotos([]);
+      setCapturedImage(null);
+      setCapturedFile(null);
+      setCurrentStep('batch');
+    } else {
+      setCurrentStep('preview');
+    }
   };
 
   const handleUploadAll = () => {
