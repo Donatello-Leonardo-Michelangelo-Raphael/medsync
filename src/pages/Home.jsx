@@ -16,6 +16,7 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState('home'); // home, options, camera, confirm, preview, search
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedFile, setCapturedFile] = useState(null);
+  const [imageQueue, setImageQueue] = useState([]);
   const fileInputRef = React.useRef(null);
   const cameraInputRef = React.useRef(null);
 
@@ -34,16 +35,32 @@ export default function Home() {
   };
 
   const handleFileSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setCapturedImage(event.target.result);
-        setCapturedFile(file);
-        setCurrentStep('confirm');
-      };
-      reader.readAsDataURL(file);
-    }
+    const files = Array.from(e.target.files || []);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length === 0) return;
+
+    // Process all images
+    const imagePromises = imageFiles.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve({ preview: event.target.result, file });
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(imagePromises).then(images => {
+      // Set the first image for preview
+      setCapturedImage(images[0].preview);
+      setCapturedFile(images[0].file);
+      // Queue the rest
+      setImageQueue(images.slice(1));
+      setCurrentStep('confirm');
+    });
+
+    e.target.value = '';
   };
 
   const handleCapture = (imageData, file) => {
@@ -64,9 +81,21 @@ export default function Home() {
 
   const handleSaved = () => {
     toast.success('Document saved successfully');
-    setCapturedImage(null);
-    setCapturedFile(null);
-    setCurrentStep('home');
+    
+    // Check if there are more images in the queue
+    if (imageQueue.length > 0) {
+      // Move to next image
+      const nextImage = imageQueue[0];
+      setCapturedImage(nextImage.preview);
+      setCapturedFile(nextImage.file);
+      setImageQueue(imageQueue.slice(1));
+      setCurrentStep('confirm');
+    } else {
+      // All done
+      setCapturedImage(null);
+      setCapturedFile(null);
+      setCurrentStep('home');
+    }
   };
 
   const handleClose = () => {
@@ -164,6 +193,7 @@ export default function Home() {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         onChange={handleFileSelect}
         className="hidden"
       />
