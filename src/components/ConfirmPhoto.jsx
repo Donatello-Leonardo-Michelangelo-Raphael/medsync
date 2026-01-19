@@ -2,7 +2,7 @@ import React from 'react';
 import { RotateCcw, Check, X, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onTakeAnother, onClose, showTakeAnother = false, queuedCount = 0 }) {
+export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onUploadAll, onTakeAnother, onClose, showTakeAnother = false, queuedCount = 0 }) {
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header */}
@@ -63,8 +63,17 @@ export default function ConfirmPhoto({ imagePreview, onRetake, onContinue, onTak
                 className="w-full h-14 text-base font-medium bg-[#5B9BD5] hover:bg-[#4A8AC4] text-white"
               >
                 <Check className="w-5 h-5 mr-2" />
-                {queuedCount > 0 ? 'Upload All' : 'Continue'}
+                Continue
               </Button>
+              {queuedCount > 0 && (
+                <Button
+                  onClick={onUploadAll}
+                  variant="outline"
+                  className="w-full h-12 text-sm font-medium border-2 border-green-500 text-green-600 hover:bg-green-50"
+                >
+                  Upload All ({queuedCount + 1} photos)
+                </Button>
+              )}
             </>
           ) : (
             <div className="flex gap-4">

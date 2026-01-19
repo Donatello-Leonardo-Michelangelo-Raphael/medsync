@@ -80,17 +80,17 @@ export default function Records() {
   };
 
   const handleContinue = () => {
-    // If from camera and have queued photos, process all as batch
-    if (fromCamera && queuedPhotos.length > 0) {
-      const allPhotos = [...queuedPhotos, capturedFile];
-      setBatchFiles(allPhotos);
-      setQueuedPhotos([]);
-      setCapturedImage(null);
-      setCapturedFile(null);
-      setCurrentStep('batch');
-    } else {
-      setCurrentStep('preview');
-    }
+    setCurrentStep('preview');
+  };
+
+  const handleUploadAll = () => {
+    // Process all queued photos plus current one as batch
+    const allPhotos = [...queuedPhotos, capturedFile];
+    setBatchFiles(allPhotos);
+    setQueuedPhotos([]);
+    setCapturedImage(null);
+    setCapturedFile(null);
+    setCurrentStep('batch');
   };
 
   const handleTakeAnotherPhoto = () => {
@@ -339,6 +339,7 @@ export default function Records() {
               imagePreview={capturedImage}
               onRetake={handleRetake}
               onContinue={handleContinue}
+              onUploadAll={handleUploadAll}
               onTakeAnother={handleTakeAnotherPhoto}
               onClose={handleClose}
               showTakeAnother={fromCamera}
