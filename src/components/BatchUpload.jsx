@@ -49,31 +49,33 @@ export default function BatchUpload({ files, onComplete, onClose }) {
             const result = await base44.integrations.Core.InvokeLLM({
               prompt: `You are an OCR and medical document analysis expert. Read ALL visible text in this medical document image carefully and extract the following information:
 
-1. title: Create a descriptive title based on the document type and content (e.g., "Medical Certificate - Dr. Smith", "Blood Test Results - June 2024")
+            1. title: Create a descriptive title based on the document type and content (e.g., "Medical Certificate - Dr. Smith", "Blood Test Results - June 2024")
 
-2. document_type: Classify as one of these categories:
-   - prescription: if it's a medication prescription
-   - lab_report: if it contains test results, lab values
-   - imaging: if it's an X-ray, MRI, CT scan report
-   - discharge_summary: if it's a hospital discharge document
-   - insurance: if it's related to insurance or billing
-   - other: for medical certificates, sick notes, referrals, or anything else
+            2. document_type: Analyze the ENTIRE document content and classify as ONE of these categories based on what you read:
+            - prescription: Documents prescribing medications, medicine names, dosages, Rx symbol, pharmacy instructions
+            - lab_report: Blood tests, urine tests, pathology reports, lab values, test results, diagnostic tests
+            - imaging: X-ray reports, MRI reports, CT scan reports, ultrasound reports, radiology findings
+            - discharge_summary: Hospital discharge papers, admission/discharge dates, hospital stay summary
+            - insurance: Insurance claims, coverage documents, billing statements, insurance forms
+            - other: Medical certificates, sick leave notes, fitness certificates, doctor's notes, referral letters, any other medical documents
 
-3. doctor_name: Extract the full name of any doctor, physician, or healthcare provider mentioned. Look for "Dr.", signatures, letterheads, or provider information.
+            IMPORTANT: Read the FULL TEXT of the document first, then determine which category it matches MOST CLOSELY based on the content, keywords, and medical terminology you see.
 
-4. record_date: Find any date on the document - issue date, visit date, or test date. Format as YYYY-MM-DD. Look carefully at the top or bottom of the document.
+            3. doctor_name: Extract the full name of any doctor, physician, or healthcare provider mentioned. Look for "Dr.", signatures, letterheads, or provider information.
 
-5. notes: Extract ALL important information you can read from the document including:
-   - Patient conditions or diagnoses mentioned
-   - Any medical advice or recommendations
-   - Test results or values
-   - Medication names and dosages
-   - Valid periods (e.g., "valid from X to Y")
-   - Any other relevant medical information
+            4. record_date: Find any date on the document - issue date, visit date, or test date. Format as YYYY-MM-DD. Look carefully at the top or bottom of the document.
 
-Read every word carefully, including headers, footers, and small text. If you see text but can't read it clearly, still try your best to extract what you can.
+            5. notes: Extract ALL important information you can read from the document including:
+            - Patient conditions or diagnoses mentioned
+            - Any medical advice or recommendations
+            - Test results or values
+            - Medication names and dosages
+            - Valid periods (e.g., "valid from X to Y")
+            - Any other relevant medical information
 
-IMPORTANT: You MUST return a valid JSON object with all fields, even if empty strings.`,
+            Read every word carefully, including headers, footers, and small text. If you see text but can't read it clearly, still try your best to extract what you can.
+
+            IMPORTANT: You MUST return a valid JSON object with all fields, even if empty strings.`,
               file_urls: [file_url],
               response_json_schema: {
                 type: "object",
