@@ -27,13 +27,26 @@ export default function DocumentPreview({ imagePreview, file, onBack, onSaved, f
   const analyzeDocument = async () => {
     setAnalyzing(true);
     
-    // Upload the file first to get the URL
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setUploadedFileUrl(file_url);
-    
-    // Analyze the document with AI
-    const extractedData = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are an OCR and medical document analysis expert. Read ALL visible text in this medical document image carefully and extract the following information:
+    try {
+      // Upload the file first to get the URL
+      console.log('Uploading file...');
+      const uploadResult = await base44.integrations.Core.UploadFile({ file });
+      const file_url = uploadResult.file_url;
+      console.log('File uploaded:', file_url);
+      setUploadedFileUrl(file_url);
+      
+      // Retry logic for LLM analysis (up to 3 attempts)
+      let extractedData = null;
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      while (!extractedData && attempts < maxAttempts) {
+        attempts++;
+        console.log(`Analyzing document (attempt ${attempts}/${maxAttempts})...`);
+        
+        try {
+          const result = await base44.integrations.Core.InvokeLLM({
+            prompt: `You are an OCR and medical document analysis expert. Read ALL visible text in this medical document image carefully and extract the following information:
 
 1. title: Create a descriptive title based on the document type and content (e.g., "Medical Certificate - Dr. Smith", "Blood Test Results - June 2024")
 
@@ -57,28 +70,66 @@ export default function DocumentPreview({ imagePreview, file, onBack, onSaved, f
    - Valid periods (e.g., "valid from X to Y")
    - Any other relevant medical information
 
-Read every word carefully, including headers, footers, and small text. If you see text but can't read it clearly, still try your best to extract what you can.`,
-      file_urls: [file_url],
-      response_json_schema: {
-        type: "object",
-        properties: {
-          title: { type: "string" },
-          document_type: { type: "string" },
-          doctor_name: { type: "string" },
-          record_date: { type: "string" },
-          notes: { type: "string" }
+Read every word carefully, including headers, footers, and small text. If you see text but can't read it clearly, still try your best to extract what you can.
+
+IMPORTANT: You MUST return a valid JSON object with all fields, even if empty strings.`,
+            file_urls: [file_url],
+            response_json_schema: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                document_type: { type: "string" },
+                doctor_name: { type: "string" },
+                record_date: { type: "string" },
+                notes: { type: "string" }
+              },
+              required: ["title", "document_type", "doctor_name", "record_date", "notes"]
+            }
+          });
+          
+          if (result && typeof result === 'object') {
+            extractedData = result;
+            console.log('Analysis successful:', extractedData);
+          }
+        } catch (error) {
+          console.error(`Attempt ${attempts} failed:`, error);
+          if (attempts === maxAttempts) {
+            console.error('All analysis attempts failed');
+          }
         }
       }
-    });
-    
-    // Auto-fill the form with extracted data
-    if (extractedData.title) setTitle(extractedData.title);
-    if (extractedData.document_type) setDocumentType(extractedData.document_type);
-    if (extractedData.doctor_name) setDoctorName(extractedData.doctor_name);
-    if (extractedData.record_date) setRecordDate(extractedData.record_date);
-    if (extractedData.notes) setNotes(extractedData.notes);
-    
-    setAnalyzing(false);
+      
+      // Auto-fill the form with extracted data
+      if (extractedData) {
+        if (extractedData.title && extractedData.title.trim()) {
+          setTitle(extractedData.title.trim());
+          console.log('Set title:', extractedData.title);
+        }
+        if (extractedData.document_type && extractedData.document_type.trim()) {
+          setDocumentType(extractedData.document_type.trim());
+          console.log('Set document type:', extractedData.document_type);
+        }
+        if (extractedData.doctor_name && extractedData.doctor_name.trim()) {
+          setDoctorName(extractedData.doctor_name.trim());
+          console.log('Set doctor name:', extractedData.doctor_name);
+        }
+        if (extractedData.record_date && extractedData.record_date.trim()) {
+          setRecordDate(extractedData.record_date.trim());
+          console.log('Set record date:', extractedData.record_date);
+        }
+        if (extractedData.notes && extractedData.notes.trim()) {
+          setNotes(extractedData.notes.trim());
+          console.log('Set notes:', extractedData.notes);
+        }
+      } else {
+        console.warn('No data extracted from document');
+      }
+    } catch (error) {
+      console.error('Document analysis failed:', error);
+    } finally {
+      setAnalyzing(false);
+      console.log('Analysis complete');
+    }
   };
 
   const handleSave = async () => {
