@@ -24,11 +24,22 @@ export default function BatchUpload({ files, onComplete, onClose }) {
 
       try {
         // Upload file
+        console.log(`Uploading file ${i + 1}/${files.length}...`);
         const { file_url } = await base44.integrations.Core.UploadFile({ file: files[i] });
+        console.log(`File ${i + 1} uploaded:`, file_url);
 
-        // Analyze with AI
-        const extractedData = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are an OCR and medical document analysis expert. Read ALL visible text in this medical document image carefully and extract the following information:
+        // Retry logic for LLM analysis (up to 3 attempts)
+        let extractedData = null;
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (!extractedData && attempts < maxAttempts) {
+          attempts++;
+          console.log(`Analyzing document ${i + 1} (attempt ${attempts}/${maxAttempts})...`);
+          
+          try {
+            const result = await base44.integrations.Core.InvokeLLM({
+              prompt: `You are an OCR and medical document analysis expert. Read ALL visible text in this medical document image carefully and extract the following information:
 
 1. title: Create a descriptive title based on the document type and content (e.g., "Medical Certificate - Dr. Smith", "Blood Test Results - June 2024")
 
@@ -52,34 +63,59 @@ export default function BatchUpload({ files, onComplete, onClose }) {
    - Valid periods (e.g., "valid from X to Y")
    - Any other relevant medical information
 
-Read every word carefully, including headers, footers, and small text. If you see text but can't read it clearly, still try your best to extract what you can.`,
-          file_urls: [file_url],
-          response_json_schema: {
-            type: "object",
-            properties: {
-              title: { type: "string" },
-              document_type: { type: "string" },
-              doctor_name: { type: "string" },
-              record_date: { type: "string" },
-              notes: { type: "string" }
+Read every word carefully, including headers, footers, and small text. If you see text but can't read it clearly, still try your best to extract what you can.
+
+IMPORTANT: You MUST return a valid JSON object with all fields, even if empty strings.`,
+              file_urls: [file_url],
+              response_json_schema: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  document_type: { type: "string" },
+                  doctor_name: { type: "string" },
+                  record_date: { type: "string" },
+                  notes: { type: "string" }
+                },
+                required: ["title", "document_type", "doctor_name", "record_date", "notes"]
+              }
+            });
+            
+            if (result && typeof result === 'object') {
+              extractedData = result;
+              console.log(`Document ${i + 1} analysis successful:`, extractedData);
+            }
+          } catch (error) {
+            console.error(`Document ${i + 1} attempt ${attempts} failed:`, error);
+            if (attempts === maxAttempts) {
+              console.error(`All analysis attempts failed for document ${i + 1}`);
+              // Use default values if all attempts fail
+              extractedData = {
+                title: '',
+                document_type: '',
+                doctor_name: '',
+                record_date: '',
+                notes: ''
+              };
             }
           }
-        });
+        }
 
-        // Save to database
+        // Save to database with trimmed values
         await base44.entities.MedicalRecord.create({
-          title: extractedData.title || 'Untitled Document',
+          title: (extractedData.title && extractedData.title.trim()) || 'Untitled Document',
           document_url: file_url,
-          document_type: extractedData.document_type || 'other',
-          doctor_name: extractedData.doctor_name,
-          record_date: extractedData.record_date,
+          document_type: (extractedData.document_type && extractedData.document_type.trim()) || 'other',
+          doctor_name: (extractedData.doctor_name && extractedData.doctor_name.trim()) || '',
+          record_date: (extractedData.record_date && extractedData.record_date.trim()) || '',
           date_captured: new Date().toISOString().split('T')[0],
-          notes: extractedData.notes
+          notes: (extractedData.notes && extractedData.notes.trim()) || ''
         });
 
+        console.log(`Document ${i + 1} saved successfully`);
         results[i] = { status: 'success' };
         setProgress([...results]);
       } catch (error) {
+        console.error(`Document ${i + 1} processing failed:`, error);
         results[i] = { status: 'error', error: error.message };
         setProgress([...results]);
       }
