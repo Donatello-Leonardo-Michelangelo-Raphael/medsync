@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
@@ -8,10 +8,18 @@ export default function BatchUpload({ files, onComplete, onClose }) {
   const navigate = useNavigate();
   const [progress, setProgress] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const startedRef = useRef(false);
+
+  /*useEffect(() => {
+    processFiles();
+  }, []);*/
 
   useEffect(() => {
+    if (startedRef.current) return;
+    if (!files?.length) return;
+    startedRef.current = true;
     processFiles();
-  }, []);
+  }, [files]);
 
   const processFiles = async () => {
     const results = files.map(() => ({ status: 'pending' }));
