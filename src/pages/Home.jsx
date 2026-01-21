@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, FileText, FolderOpen, Search, Check } from 'lucide-react';
+import { Camera, FileText, FolderOpen, Search, Check, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -224,10 +224,19 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="text-center">
-        <p className="text-xs text-gray-400 px-6 py-1">
-          Your data is securely stored
-        </p>
+      <footer className="border-t border-gray-100 px-6 py-3 flex justify-around items-center bg-white">
+        <Link to={createPageUrl('Home')} className="flex flex-col items-center gap-1 text-[#5B9BD5]">
+          <FileText className="w-5 h-5" />
+          <span className="text-xs font-medium">Home</span>
+        </Link>
+        <Link to={createPageUrl('Records')} className="flex flex-col items-center gap-1 text-gray-400">
+          <FolderOpen className="w-5 h-5" />
+          <span className="text-xs font-medium">Records</span>
+        </Link>
+        <Link to={createPageUrl('Settings')} className="flex flex-col items-center gap-1 text-gray-400">
+          <Settings className="w-5 h-5" />
+          <span className="text-xs font-medium">Settings</span>
+        </Link>
       </footer>
 
       {/* Profile Widget */}
