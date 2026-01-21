@@ -1,7 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Toaster } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import PrivacyConsent from '@/components/PrivacyConsent';
 
 export default function Layout({ children }) {
+  const [showConsent, setShowConsent] = useState(false);
+
+  const { data: user, isLoading } = useQuery({
+    queryKey: ['current-user-consent'],
+    queryFn: () => base44.auth.me(),
+    retry: false
+  });
+
+  useEffect(() => {
+    if (!isLoading && user && !user.privacy_consent) {
+      setShowConsent(true);
+    }
+  }, [user, isLoading]);
+
+  const handleConsent = () => {
+    setShowConsent(false);
+    window.location.reload();
+  };
+
   return (
     <div className="font-sans antialiased">
       <style>{`
@@ -29,7 +51,11 @@ export default function Layout({ children }) {
           },
         }}
       />
-      {children}
+      {showConsent ? (
+        <PrivacyConsent onConsent={handleConsent} />
+      ) : (
+        children
+      )}
     </div>
   );
 }
