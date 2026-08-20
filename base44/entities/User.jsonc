@@ -1,0 +1,19 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "privacy_consent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has consented to privacy policy"
+    },
+    "privacy_consent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When user consented to privacy policy"
+    }
+  },
+  "required": [
+    "privacy_consent_date"
+  ]
+}

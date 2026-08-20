@@ -1,0 +1,64 @@
+{
+  "name": "MedicalRecord",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title or name of the medical record"
+    },
+    "document_url": {
+      "type": "string",
+      "description": "URL of the uploaded document image"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "prescription",
+        "lab_report",
+        "imaging",
+        "discharge_summary",
+        "insurance",
+        "other"
+      ],
+      "description": "Type of medical document"
+    },
+    "doctor_name": {
+      "type": "string",
+      "description": "Name of the doctor or healthcare provider"
+    },
+    "record_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date on the medical record"
+    },
+    "date_captured": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when the document was captured"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the document"
+    }
+  },
+  "required": [
+    "document_url"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    },
+    "write": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}
